@@ -1,0 +1,54 @@
+---
+title: "Orange or Grapefruit?"
+author: "Manny McGrail"
+date: "2023-12-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+# Libraries and data
+library(ggplot2)
+library(caret)
+citrus <- read.csv("C:/Users/super/Desktop/Coding Projects/Data Sets/grapefruitororange.csv")
+```
+
+```{r}
+# Clean the data
+citrus$name <- as.factor(citrus$name)
+```
+
+```{r}
+# Explore the data
+ggplot(citrus, aes(x = diameter, y = weight, color = name)) +
+  geom_point()
+
+ggplot(citrus, aes(x = blue, color = name)) +
+  geom_boxplot()
+```
+
+```{r}
+# Splitting data
+set.seed(123)
+
+trainIndex <- createDataPartition(citrus$name, p = 0.8, list = FALSE)
+
+trainingSet <- citrus[trainIndex,]
+testingSet <- citrus[-trainIndex, ]
+
+dim(trainingSet)
+dim(testingSet)
+```
+
+
+```{r,warning=F}
+# Training and evaluating model
+model <- train(name ~., data = trainingSet, method = "glm")
+
+predictions <- predict(model, newdata = testingSet)
+confusionMatrix(predictions, testingSet$name)
+```
